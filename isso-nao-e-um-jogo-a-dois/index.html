@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Isso Não É um Jogo a Dois</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@500;700;900&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: mesa escura e quente, uma carta no centro; abaixo dela a prenda aparece como um bilhete quando a pessoa não quer responder. */
+:root{
+  --mesa:#1c0710; --mesa-2:#3b0d1f; --papel:#fbe8e4; --tinta:#2a0812;
+  --brasa:#ff3d5e; --brasa-escura:#b3132f; --ouro:#f2b46d; --nevoa:#dcb3bf;
+  --f-display:"Darker Grotesque",system-ui,sans-serif;
+  --f-mono:"DM Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:radial-gradient(120% 80% at 50% 0%,var(--mesa-2),var(--mesa) 70%);background-color:var(--mesa);color:var(--papel);font-family:var(--f-display);font-size:18px}
+.wrap{min-height:100%;max-width:440px;margin:0 auto;padding-block:20px 32px;padding-inline:16px;display:flex;flex-direction:column;gap:18px;box-sizing:border-box}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+h1{margin:0;font-weight:900;font-size:1.7rem;line-height:1;letter-spacing:-.01em;text-wrap:balance}
+h1 s{text-decoration-color:var(--brasa);text-decoration-thickness:3px}
+h1 em{font-style:normal;color:var(--ouro)}
+.restam{font-family:var(--f-mono);font-size:.78rem;color:var(--nevoa);white-space:nowrap;font-variant-numeric:tabular-nums}
+.aviso{margin:0;font-size:1rem;line-height:1.2;color:var(--nevoa);border:1px dashed rgba(220,179,191,.45);border-radius:10px;padding:10px 12px}
+.aviso b{color:var(--papel)}
+.palco{perspective:1200px}
+.carta{position:relative;aspect-ratio:3/4;max-width:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.carta.virada{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 18px 40px rgba(0,0,0,.5);box-sizing:border-box}
+.verso{background:repeating-linear-gradient(-45deg,var(--brasa-escura) 0 10px,var(--mesa-2) 10px 20px);display:grid;place-items:center;border:8px solid var(--papel)}
+.verso span{background:var(--papel);color:var(--tinta);font-weight:900;font-size:1.5rem;line-height:.95;padding:14px 16px;text-align:center;border-radius:6px;transform:rotate(-4deg)}
+.verso span em{font-style:normal;color:var(--brasa-escura)}
+.frente{background:var(--papel);color:var(--tinta);transform:rotateY(180deg);display:flex;flex-direction:column;padding:20px 22px}
+.topo{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:1.5px solid var(--tinta);padding-bottom:10px;gap:8px}
+.topo b{font-weight:500;color:var(--brasa-escura);font-variant-numeric:tabular-nums}
+.pergunta{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:clamp(1.6rem,7.4vw,2.2rem);line-height:1.02;text-wrap:balance;min-width:0;overflow-wrap:anywhere}
+.regra{font-family:var(--f-mono);font-size:.72rem;text-align:center;border-top:1.5px solid var(--tinta);padding-top:10px}
+.prenda{background:var(--ouro);color:var(--tinta);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;transform:rotate(-1.2deg);box-shadow:0 10px 24px rgba(0,0,0,.4);animation:entra .35s ease-out}
+.prenda small{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
+.prenda p{margin:0;font-weight:700;font-size:1.45rem;line-height:1.05;text-wrap:balance}
+@keyframes entra{from{transform:translateY(-8px) rotate(-1.2deg);opacity:.2}to{transform:rotate(-1.2deg);opacity:1}}
+.acoes{display:flex;flex-direction:column;gap:10px}
+button{font:inherit;cursor:pointer;border:0}
+#sortear{background:var(--brasa);color:var(--tinta);font-weight:900;font-size:1.45rem;padding:14px 18px;border-radius:999px;box-shadow:0 6px 0 var(--brasa-escura);transition:transform .08s,box-shadow .08s}
+#sortear:active{transform:translateY(4px);box-shadow:0 2px 0 var(--brasa-escura)}
+#sortear:disabled{opacity:.5;cursor:default}
+#recusar{background:transparent;color:var(--ouro);border:2px solid var(--ouro);border-radius:999px;padding:11px 16px;font-weight:900;font-size:1.2rem}
+#recusar:disabled{opacity:.4;cursor:default}
+.sec{display:flex;gap:10px}
+.sec button{flex:1;background:transparent;color:var(--nevoa);border:1.5px solid var(--nevoa);border-radius:999px;padding:9px 12px;font-weight:700;font-size:1rem}
+.sec button:disabled{opacity:.4;cursor:default}
+button:focus-visible{outline:3px solid var(--papel);outline-offset:3px}
+details{border-top:1px solid rgba(220,179,191,.3);padding-top:12px}
+summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;color:var(--nevoa)}
+ol{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:1.05rem;line-height:1.15}
+ol li{display:flex;gap:10px}
+ol li i{font-style:normal;font-family:var(--f-mono);font-size:.75rem;color:var(--brasa);padding-top:3px;font-variant-numeric:tabular-nums}
+ol li span small{display:block;color:var(--ouro);font-size:.95rem}
+.fim{text-align:center;color:var(--nevoa);font-size:1rem;margin:0}
+@media (prefers-reduced-motion:reduce){.carta{transition:none}.prenda{animation:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Isso <s>não</s> é um jogo <em>a dois</em></h1>
+    <span class="restam" id="restam">100 de 100 cartas</span>
+  </header>
+
+  <p class="aviso"><b>Só para maiores de 18.</b> Combinem os limites antes. Qualquer um pode pular uma prenda, sem precisar explicar.</p>
+
+  <div class="palco">
+    <div class="carta" id="carta" aria-live="polite">
+      <div class="face verso" aria-hidden="true"><span>ISSO NÃO<br>É UM JOGO<br><em>A DOIS</em></span></div>
+      <div class="face frente">
+        <div class="topo"><span>Isso não é um jogo a dois</span><b id="num">000/100</b></div>
+        <div class="pergunta" id="pergunta"></div>
+        <div class="regra">Responda ou cumpra uma prenda.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prenda" id="prenda" aria-live="polite" hidden>
+    <small><span>Prenda</span><span id="prendaNum"></span></small>
+    <p id="prendaTxt"></p>
+  </div>
+
+  <div class="acoes">
+    <button id="sortear" type="button">Sortear carta</button>
+    <button id="recusar" type="button" disabled>Não quero responder: sortear prenda</button>
+    <div class="sec">
+      <button id="desfazer" type="button">Voltar carta</button>
+      <button id="reiniciar" type="button">Embaralhar tudo</button>
+    </div>
+    <p class="fim" id="fim" hidden>Acabaram as 100 cartas. Toque em “Embaralhar tudo” para recomeçar.</p>
+  </div>
+
+  <details>
+    <summary id="histTitulo">Cartas já sorteadas (0)</summary>
+    <ol id="hist"></ol>
+  </details>
+</main>
+
+<script>
+const CARTAS = [
+"Qual foi a primeira coisa em mim que te deu vontade de me beijar?",
+"Qual parte do meu corpo você mais gosta de olhar quando eu não percebo?",
+"Qual foi o nosso beijo mais marcante até hoje?",
+"Qual roupa minha mais mexe com você?",
+"Em que lugar inusitado você já pensou em me beijar?",
+"Qual foi a vez em que você mais sentiu desejo por mim em público?",
+"Qual fantasia você nunca me contou por vergonha?",
+"O que eu faço que te arrepia na hora?",
+"Qual é a sua lembrança mais quente de nós dois?",
+"Se tivéssemos uma noite inteira sem pressa, como você começaria?",
+"Qual parte do meu corpo você gostaria de explorar mais?",
+"Você prefere carinho lento ou intensidade desde o começo?",
+"Qual foi o momento em que você mais quis me agarrar e precisou se segurar?",
+"Que lugar da casa você ainda quer estrear comigo?",
+"Qual cheiro meu você mais gosta?",
+"Que palavra ou frase minha te deixa com vontade na hora?",
+"Você já sonhou comigo de um jeito picante? Conte como foi.",
+"O que você gostaria que eu fizesse mais vezes na cama?",
+"O que você gostaria de tentar comigo e ainda não pediu?",
+"Qual é a sua posição preferida comigo?",
+"Manhã, tarde ou noite: qual é o seu horário favorito para nós dois?",
+"Qual peça de roupa minha você mais gosta de tirar?",
+"Qual foi a mensagem mais ousada que você pensou em me mandar e não mandou?",
+"Você prefere me provocar ou que eu te provoque?",
+"Que música você colocaria para tocar numa noite só nossa?",
+"Qual é o seu ponto mais sensível que talvez eu ainda não conheça?",
+"O que te deixa mais no clima: palavras, toques ou olhares?",
+"Qual foi a vez em que eu mais te surpreendi na intimidade?",
+"Que fantasia com cenário (hotel, praia, viagem) você gostaria de realizar comigo?",
+"Você toparia usar uma venda comigo? Quem ficaria de olhos vendados?",
+"Que peça íntima você gostaria de me ver usando?",
+"Qual foi a coisa mais ousada que já fizemos juntos?",
+"Existe algo que já fizemos que você adoraria repetir hoje?",
+"Qual é a sua parte favorita das preliminares?",
+"Quanto tempo de preliminares seria perfeito para você?",
+"Você gosta quando eu tomo a iniciativa? Como gostaria que eu fizesse?",
+"Que elogio sobre o seu corpo você adoraria ouvir de mim?",
+"Qual parte do seu corpo você mais gosta que eu beije?",
+"Banho juntos: romântico ou perigoso? Por quê?",
+"Você já sentiu ciúme e isso te deu mais vontade de mim?",
+"Qual é a coisa mais sexy que eu faço sem perceber?",
+"Se pudesse escolher qualquer lugar do mundo para uma noite comigo, qual seria?",
+"Luz acesa ou apagada? Por quê?",
+"Que brinquedo ou acessório você teria curiosidade de experimentar comigo?",
+"O que você pensa quando me vê saindo do banho?",
+"Que tipo de mensagem minha durante o dia te deixa no clima?",
+"Você gostaria que eu falasse mais na hora H? O quê?",
+"Qual é o limite seu que eu nunca devo ultrapassar?",
+"Qual foi a vez em que você mais teve vontade de mim e eu nem percebi?",
+"Massagem: você prefere receber ou fazer? Em que parte do corpo?",
+"Que comida você gostaria de usar numa noite a dois?",
+"Rapidinha ou noite longa: o que você escolheria agora?",
+"Qual é o lugar mais arriscado em que você toparia um beijo demorado?",
+"Quando foi a primeira vez que você pensou em mim de um jeito picante?",
+"Que tipo de toque meu te desmonta?",
+"O que você sente quando eu sussurro no seu ouvido?",
+"Que personagem você toparia interpretar comigo numa fantasia?",
+"Você gostaria de tirar fotos sensuais só para nós dois?",
+"O que eu poderia vestir hoje para te deixar sem foco?",
+"Qual é a parte do meu corpo que você mais gosta de tocar?",
+"Qual foi a nossa melhor noite? O que a tornou especial?",
+"O que você mais gosta no meu beijo?",
+"Como você gostaria que eu te acordasse num domingo sem compromisso?",
+"Você gostaria de ter mais controle ou de me deixar no comando?",
+"Em que momento do dia você mais pensa em mim de um jeito picante?",
+"Qual é a sua lembrança íntima favorita do começo do nosso relacionamento?",
+"O que você acha que eu ainda deveria saber sobre o que te dá prazer?",
+"Se tivesse que descrever a nossa química em três palavras, quais seriam?",
+"O que mais te excita na nossa intimidade?",
+"Como seria o encontro perfeito que termina na cama?",
+"Você gosta de surpresas na intimidade ou prefere combinar antes?",
+"Que som eu faço que você mais gosta de ouvir?",
+"Que parte do meu corpo você beijaria agora, se pudesse?",
+"O que te deixa mais confiante na cama?",
+"Que insegurança sobre a intimidade você gostaria de me contar?",
+"Você já fingiu algo na cama comigo? Responda com sinceridade.",
+"Que coisa nova você gostaria que a gente aprendesse junto?",
+"Uma noite num quarto de hotel em viagem: o que não poderia faltar?",
+"Qual foi o lugar mais inusitado em que você já sentiu vontade de mim?",
+"O que você gostaria de ouvir de mim antes de dormir hoje?",
+"Strip-tease: você faria um para mim? E gostaria de receber um?",
+"Qual é a parte favorita do seu próprio corpo?",
+"Beijo no pescoço, na nuca ou na barriga: qual você prefere?",
+"Que filme ou série já te deixou com vontade de mim?",
+"Qual é a fantasia mais simples que eu poderia realizar ainda esta semana?",
+"Você prefere que eu te provoque devagar ou que eu vá direto ao ponto?",
+"O que você faria se tivesse cinco minutos a sós comigo agora?",
+"Que tipo de carinho depois do sexo você mais gosta?",
+"Qual foi a vez em que você mais riu comigo na cama?",
+"Que lugar do meu corpo você ainda não beijou e gostaria de beijar?",
+"Você toparia trocar mensagens picantes durante o dia, como um jogo?",
+"Qual é a coisa mais sensual que eu já te disse?",
+"Se a gente criasse uma palavra secreta para \"estou com vontade\", qual seria?",
+"Que regra você colocaria numa noite só nossa?",
+"Confiança, mistério ou ousadia: o que você acha mais sexy em mim?",
+"Que lembrança nossa ainda te dá calor só de pensar?",
+"Qual desejo seu você acha que eu toparia, mas tem receio de pedir?",
+"Se eu fosse te seduzir em público sem ninguém perceber, como deveria fazer?",
+"O que você gostaria que fosse diferente na nossa rotina íntima?",
+"Se esta noite não tivesse limite além do nosso combinado, como ela terminaria?"
+];
+const PRENDAS = [
+"Dê um beijo de 30 segundos no seu par.",
+"Beije o pescoço do seu par devagar por 20 segundos.",
+"Faça uma massagem nos ombros do seu par por 1 minuto.",
+"Tire uma peça de roupa.",
+"Seu par escolhe uma peça de roupa sua para você tirar.",
+"Sussurre no ouvido do seu par o que você quer fazer hoje à noite.",
+"Beije a parte do corpo que o seu par escolher.",
+"Feche os olhos e deixe seu par te beijar onde quiser por 30 segundos.",
+"Faça uma dança sensual de 30 segundos.",
+"Mordisque de leve a orelha do seu par.",
+"Deixe seu par te tocar onde quiser, por cima da roupa, por 20 segundos.",
+"Sente no colo do seu par até a próxima carta.",
+"Beije a barriga do seu par.",
+"Descreva em detalhes como seria a sua noite perfeita com seu par.",
+"Mande agora uma mensagem picante para o seu par, mesmo estando ao lado.",
+"Faça uma massagem nas costas do seu par, sem camisa.",
+"Toque o rosto do seu par só com os lábios por 30 segundos.",
+"Tire a peça de roupa do seu par que você escolher.",
+"Faça um strip-tease lento de uma peça de roupa.",
+"Dê um beijo de cinema, sem pressa.",
+"Passe um cubo de gelo no pescoço do seu par. Sem gelo, use os lábios.",
+"Feche os olhos (ou use uma venda) até a próxima carta.",
+"De olhos fechados, seu par tenta adivinhar onde você vai beijar.",
+"Beije as costas do seu par, descendo pela coluna.",
+"Mostre, sem palavras, o beijo que você mais gosta de receber.",
+"Fique só com a roupa íntima até a próxima carta.",
+"Faça carinho nas coxas do seu par por 20 segundos.",
+"Beije a nuca do seu par e sussurre um elogio.",
+"Seu par te dá uma ordem, dentro do combinado, e você cumpre.",
+"Dê uma mordida de leve no lábio do seu par.",
+"Dê 10 beijos em 10 lugares diferentes do corpo do seu par.",
+"Leia em voz alta, com voz sensual, a última mensagem que seu par te mandou.",
+"Abrace seu par por trás e diga no ouvido o que mais te atrai.",
+"Tire uma peça de roupa do seu par usando só a boca.",
+"Escolha uma música e dancem bem juntos até ela acabar.",
+"Faça uma massagem nos pés do seu par.",
+"Seu par escreve uma palavra com o dedo nas suas costas. Adivinhe qual é.",
+"Beije seu par do jeito que ele pedir.",
+"Fique 1 minuto sem se mexer enquanto seu par te provoca com beijos.",
+"Dê ao seu par um vale-desejo para usar ainda esta semana.",
+"Tire uma peça de roupa bem devagar, olhando nos olhos do seu par.",
+"Conte uma fantasia que você ainda não contou.",
+"Seu par escolhe a sua próxima prenda.",
+"Passe os lábios pelo braço do seu par, do pulso até o ombro.",
+"Dê um beijo em cada parte do rosto do seu par.",
+"Faça uma proposta indecente para mais tarde. Seu par decide se aceita.",
+"Beije seu par sem usar as mãos.",
+"Vista uma peça de roupa do seu par até o fim do jogo.",
+"Faça carinho na nuca do seu par por 1 minuto, bem devagar.",
+"Prenda livre: seu par inventa uma, dentro do combinado."
+];
+const CHAVE = "isso-nao-e-um-jogo-a-dois:v1";
+const $ = id => document.getElementById(id);
+// cada jogada: {c: índice da carta, p: índice da prenda ou null}
+let jogadas = [];
+let prendasUsadas = [];
+let confirmando = false;
+
+function rand(n){ const r = new Uint32Array(1); crypto.getRandomValues(r); return r[0] % n; }
+function pad(n){ return String(n+1).padStart(3,"0"); }
+
+function carregar(){
+  try{
+    const s = JSON.parse(localStorage.getItem(CHAVE));
+    if(s && Array.isArray(s.j)) jogadas = s.j.filter(x=>x && Number.isInteger(x.c) && x.c>=0 && x.c<CARTAS.length);
+    if(s && Array.isArray(s.p)) prendasUsadas = s.p.filter(n=>Number.isInteger(n)&&n>=0&&n<PRENDAS.length);
+  }catch(e){}
+}
+function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify({j:jogadas,p:prendasUsadas})); }catch(e){} }
+
+function mostrarCarta(j){
+  const carta = $("carta");
+  if(!j){ carta.classList.remove("virada"); return; }
+  $("num").textContent = pad(j.c) + "/100";
+  $("pergunta").textContent = CARTAS[j.c];
+  carta.classList.add("virada");
+}
+function mostrarPrenda(j){
+  const box = $("prenda");
+  if(!j || j.p == null){ box.hidden = true; return; }
+  $("prendaNum").textContent = String(j.p+1).padStart(2,"0") + "/" + PRENDAS.length;
+  $("prendaTxt").textContent = PRENDAS[j.p];
+  box.hidden = false;
+}
+
+function render(){
+  const resto = CARTAS.length - jogadas.length;
+  const atual = jogadas[jogadas.length-1];
+  $("restam").textContent = resto + " de " + CARTAS.length + " cartas";
+  $("sortear").disabled = resto === 0;
+  $("fim").hidden = resto !== 0;
+  $("desfazer").disabled = jogadas.length === 0;
+  $("recusar").disabled = !atual;
+  $("recusar").textContent = atual && atual.p != null ? "Trocar a prenda" : "Não quero responder: sortear prenda";
+  $("histTitulo").textContent = "Cartas já sorteadas (" + jogadas.length + ")";
+  const ol = $("hist"); ol.textContent = "";
+  jogadas.slice().reverse().forEach(j=>{
+    const li = document.createElement("li");
+    const n = document.createElement("i"); n.textContent = pad(j.c);
+    const t = document.createElement("span"); t.textContent = CARTAS[j.c];
+    if(j.p != null){ const s = document.createElement("small"); s.textContent = "Prenda: " + PRENDAS[j.p]; t.append(s); }
+    li.append(n,t); ol.append(li);
+  });
+}
+
+function sortear(){
+  const usadas = new Set(jogadas.map(j=>j.c));
+  const disp = CARTAS.map((_,i)=>i).filter(i=>!usadas.has(i));
+  if(!disp.length) return;
+  const j = {c: disp[rand(disp.length)], p: null};
+  jogadas.push(j); salvar();
+  mostrarPrenda(null);
+  const carta = $("carta");
+  if(carta.classList.contains("virada")){ carta.classList.remove("virada"); setTimeout(()=>mostrarCarta(j), 320); }
+  else mostrarCarta(j);
+  render();
+}
+
+function sortearPrenda(){
+  const j = jogadas[jogadas.length-1]; if(!j) return;
+  let disp = PRENDAS.map((_,i)=>i).filter(i=>!prendasUsadas.includes(i) && i !== j.p);
+  if(!disp.length){ prendasUsadas = []; disp = PRENDAS.map((_,i)=>i).filter(i=>i !== j.p); }
+  j.p = disp[rand(disp.length)];
+  prendasUsadas.push(j.p); salvar();
+  mostrarPrenda(j); render();
+}
+
+$("sortear").addEventListener("click", sortear);
+$("recusar").addEventListener("click", sortearPrenda);
+$("desfazer").addEventListener("click", ()=>{
+  jogadas.pop(); salvar();
+  const atual = jogadas[jogadas.length-1];
+  mostrarCarta(atual); mostrarPrenda(atual); render();
+});
+$("reiniciar").addEventListener("click", e=>{
+  const b = e.currentTarget;
+  if(!confirmando){ confirmando = true; b.textContent = "Confirmar?"; setTimeout(()=>{confirmando=false; b.textContent="Embaralhar tudo";}, 3000); return; }
+  confirmando = false; b.textContent = "Embaralhar tudo";
+  jogadas = []; prendasUsadas = []; salvar(); mostrarCarta(null); mostrarPrenda(null); render();
+});
+
+carregar();
+const ultima = jogadas[jogadas.length-1];
+if(ultima){ mostrarCarta(ultima); mostrarPrenda(ultima); }
+render();
+</script>
+</body>
+</html>
