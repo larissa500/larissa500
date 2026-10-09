@@ -5,96 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Isso Não É um Jogo a Dois</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@500;700;900&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,800;1,6..96,500;1,6..96,700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: mesa escura e quente, uma carta no centro; abaixo dela a prenda aparece como um bilhete quando a pessoa não quer responder. */
+/* Layout: salão de veludo à meia-luz; carta escura de moldura dourada, menor e centralizada; cartas surpresa em rosa-choque. */
 :root{
-  --mesa:#1c0710; --mesa-2:#3b0d1f; --papel:#fbe8e4; --tinta:#2a0812;
-  --brasa:#ff3d5e; --brasa-escura:#b3132f; --ouro:#f2b46d; --nevoa:#dcb3bf;
-  --f-display:"Darker Grotesque",system-ui,sans-serif;
-  --f-mono:"DM Mono",ui-monospace,monospace;
+  --veludo:#0f0716; --veludo-2:#2a1038; --carta:#1a0b24; --lilas:#f3d9f0;
+  --choque:#ff2f8e; --choque-escuro:#a8125a; --ouro:#d9b26a; --fumaca:#b79bc0;
+  --f-display:"Bodoni Moda","Didot",Georgia,serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
   color-scheme:dark;
 }
 html,body{height:100%}
-body{background:radial-gradient(120% 80% at 50% 0%,var(--mesa-2),var(--mesa) 70%);background-color:var(--mesa);color:var(--papel);font-family:var(--f-display);font-size:18px}
-.wrap{min-height:100%;max-width:440px;margin:0 auto;padding-block:20px 32px;padding-inline:16px;display:flex;flex-direction:column;gap:18px;box-sizing:border-box}
-header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-h1{margin:0;font-weight:900;font-size:1.7rem;line-height:1;letter-spacing:-.01em;text-wrap:balance}
-h1 s{text-decoration-color:var(--brasa);text-decoration-thickness:3px}
-h1 em{font-style:normal;color:var(--ouro)}
-.restam{font-family:var(--f-mono);font-size:.78rem;color:var(--nevoa);white-space:nowrap;font-variant-numeric:tabular-nums}
-.aviso{margin:0;font-size:1rem;line-height:1.2;color:var(--nevoa);border:1px dashed rgba(220,179,191,.45);border-radius:10px;padding:10px 12px}
-.aviso b{color:var(--papel)}
-.palco{perspective:1200px}
-.carta{position:relative;aspect-ratio:3/4;max-width:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+body{background:radial-gradient(90% 60% at 50% 30%,var(--veludo-2),var(--veludo) 75%);background-color:var(--veludo);color:var(--lilas);font-family:var(--f-display);font-size:17px}
+.wrap{min-height:100%;max-width:420px;margin:0 auto;padding-block:20px 32px;padding-inline:16px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box}
+header{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+h1{margin:0;font-weight:500;font-style:italic;font-size:2rem;line-height:1;letter-spacing:-.01em;text-wrap:balance}
+h1 em{font-style:normal;font-weight:800;color:var(--choque)}
+.restam{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ouro);font-variant-numeric:tabular-nums}
+.aviso{margin:0;font-family:var(--f-mono);font-size:.74rem;line-height:1.45;color:var(--fumaca);text-align:center}
+.aviso b{color:var(--lilas);font-weight:500}
+.palco{perspective:1100px;display:flex;justify-content:center}
+.carta{position:relative;width:min(100%,290px);aspect-ratio:5/7;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
 .carta.virada{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 18px 40px rgba(0,0,0,.5);box-sizing:border-box}
-.verso{background:repeating-linear-gradient(-45deg,var(--brasa-escura) 0 10px,var(--mesa-2) 10px 20px);display:grid;place-items:center;border:8px solid var(--papel)}
-.verso span{background:var(--papel);color:var(--tinta);font-weight:900;font-size:1.5rem;line-height:.95;padding:14px 16px;text-align:center;border-radius:6px;transform:rotate(-4deg)}
-.verso span em{font-style:normal;color:var(--brasa-escura)}
-.frente{background:var(--papel);color:var(--tinta);transform:rotateY(180deg);display:flex;flex-direction:column;padding:20px 22px}
-.topo{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:1.5px solid var(--tinta);padding-bottom:10px;gap:8px}
-.topo b{font-weight:500;color:var(--brasa-escura);font-variant-numeric:tabular-nums}
-.pergunta{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:clamp(1.6rem,7.4vw,2.2rem);line-height:1.02;text-wrap:balance;min-width:0;overflow-wrap:anywhere}
-.regra{font-family:var(--f-mono);font-size:.72rem;text-align:center;border-top:1.5px solid var(--tinta);padding-top:10px}
-.prenda{background:var(--ouro);color:var(--tinta);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;transform:rotate(-1.2deg);box-shadow:0 10px 24px rgba(0,0,0,.4);animation:entra .35s ease-out}
-.prenda small{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
-.prenda p{margin:0;font-weight:700;font-size:1.45rem;line-height:1.05;text-wrap:balance}
-@keyframes entra{from{transform:translateY(-8px) rotate(-1.2deg);opacity:.2}to{transform:rotate(-1.2deg);opacity:1}}
-.acoes{display:flex;flex-direction:column;gap:10px}
+.face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 16px 36px rgba(0,0,0,.6),0 0 0 1px var(--ouro);box-sizing:border-box}
+.verso{background:radial-gradient(circle at 50% 50%,var(--choque-escuro) 0 1.5px,transparent 2px) 0 0/14px 14px,var(--carta);display:grid;place-items:center;outline:1px solid var(--ouro);outline-offset:-10px}
+.verso span{font-style:italic;font-size:1.35rem;line-height:1;text-align:center;color:var(--lilas);background:var(--carta);padding:12px 14px;border:1px solid var(--ouro)}
+.verso span em{font-style:normal;font-weight:800;color:var(--choque)}
+.frente{background:var(--carta);color:var(--lilas);transform:rotateY(180deg);display:flex;flex-direction:column;padding:18px 18px;outline:1px solid var(--ouro);outline-offset:-8px}
+.topo{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ouro);padding:4px 4px 0;gap:8px}
+.topo b{font-weight:500;font-variant-numeric:tabular-nums}
+.pergunta{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:500;font-style:italic;font-size:clamp(1.25rem,5.6vw,1.6rem);line-height:1.15;text-wrap:balance;min-width:0;overflow-wrap:anywhere;padding-inline:4px}
+.regra{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.06em;text-align:center;color:var(--fumaca);padding-bottom:4px}
+.frente.surpresa{background:var(--choque);color:var(--carta);outline-color:var(--carta)}
+.frente.surpresa .topo,.frente.surpresa .regra{color:var(--carta)}
+.frente.surpresa .pergunta{font-style:normal;font-weight:800}
+.paga{align-self:center;width:min(100%,320px);box-sizing:border-box;background:var(--lilas);color:var(--carta);border-radius:4px;padding:12px 16px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 10px 24px rgba(0,0,0,.5);border-left:6px solid var(--choque);animation:entra .35s ease-out}
+.paga small{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--choque-escuro)}
+.paga p{margin:0;font-weight:800;font-size:1.15rem;line-height:1.2;text-wrap:balance}
+@keyframes entra{from{transform:translateY(-8px);opacity:.2}to{transform:none;opacity:1}}
+.acoes{display:flex;flex-direction:column;gap:10px;align-items:stretch}
 button{font:inherit;cursor:pointer;border:0}
-#sortear{background:var(--brasa);color:var(--tinta);font-weight:900;font-size:1.45rem;padding:14px 18px;border-radius:999px;box-shadow:0 6px 0 var(--brasa-escura);transition:transform .08s,box-shadow .08s}
-#sortear:active{transform:translateY(4px);box-shadow:0 2px 0 var(--brasa-escura)}
-#sortear:disabled{opacity:.5;cursor:default}
-#recusar{background:transparent;color:var(--ouro);border:2px solid var(--ouro);border-radius:999px;padding:11px 16px;font-weight:900;font-size:1.2rem}
-#recusar:disabled{opacity:.4;cursor:default}
+#sortear{background:var(--choque);color:var(--veludo);font-family:var(--f-mono);font-weight:500;font-size:1rem;letter-spacing:.14em;text-transform:uppercase;padding:15px 18px;border-radius:2px;transition:transform .08s,background .15s}
+#sortear:hover{background:var(--lilas)}
+#sortear:active{transform:scale(.98)}
+#sortear:disabled{opacity:.45;cursor:default}
+#pagar{background:transparent;color:var(--lilas);border:1px solid var(--ouro);border-radius:2px;padding:11px 14px;font-style:italic;font-size:1.15rem}
+#pagar:disabled{opacity:.35;cursor:default}
 .sec{display:flex;gap:10px}
-.sec button{flex:1;background:transparent;color:var(--nevoa);border:1.5px solid var(--nevoa);border-radius:999px;padding:9px 12px;font-weight:700;font-size:1rem}
-.sec button:disabled{opacity:.4;cursor:default}
-button:focus-visible{outline:3px solid var(--papel);outline-offset:3px}
-details{border-top:1px solid rgba(220,179,191,.3);padding-top:12px}
-summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;color:var(--nevoa)}
-ol{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:1.05rem;line-height:1.15}
+.sec button{flex:1;background:transparent;color:var(--fumaca);border-bottom:1px solid var(--fumaca);padding:8px 6px;font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.sec button:disabled{opacity:.35;cursor:default}
+button:focus-visible{outline:2px solid var(--ouro);outline-offset:3px}
+details{border-top:1px solid rgba(217,178,106,.35);padding-top:12px}
+summary{cursor:pointer;font-family:var(--f-mono);font-size:.74rem;letter-spacing:.06em;color:var(--ouro)}
+ol{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;font-size:1rem;line-height:1.25}
 ol li{display:flex;gap:10px}
-ol li i{font-style:normal;font-family:var(--f-mono);font-size:.75rem;color:var(--brasa);padding-top:3px;font-variant-numeric:tabular-nums}
-ol li span small{display:block;color:var(--ouro);font-size:.95rem}
-.fim{text-align:center;color:var(--nevoa);font-size:1rem;margin:0}
-@media (prefers-reduced-motion:reduce){.carta{transition:none}.prenda{animation:none}}
+ol li i{font-style:normal;font-family:var(--f-mono);font-size:.7rem;color:var(--choque);padding-top:3px;font-variant-numeric:tabular-nums;min-width:2.2em}
+ol li span{min-width:0}
+ol li span small{display:block;font-family:var(--f-mono);color:var(--fumaca);font-size:.74rem;margin-top:2px}
+.fim{text-align:center;color:var(--fumaca);font-size:1rem;margin:0}
+@media (prefers-reduced-motion:reduce){.carta{transition:none}.paga{animation:none}}
 </style>
 </head>
 <body>
 <main class="wrap">
   <header>
-    <h1>Isso <s>não</s> é um jogo <em>a dois</em></h1>
-    <span class="restam" id="restam">100 de 100 cartas</span>
+    <h1>Isso não é um jogo <em>a dois</em></h1>
+    <span class="restam" id="restam">110 de 110 cartas</span>
   </header>
 
-  <p class="aviso"><b>Só para maiores de 18.</b> Combinem os limites antes. Qualquer um pode pular uma prenda, sem precisar explicar.</p>
+  <p class="aviso"><b>Só para maiores de 18.</b> Combinem os limites antes.<br>Qualquer um pode pular uma carta, sem precisar explicar.</p>
 
   <div class="palco">
     <div class="carta" id="carta" aria-live="polite">
-      <div class="face verso" aria-hidden="true"><span>ISSO NÃO<br>É UM JOGO<br><em>A DOIS</em></span></div>
-      <div class="face frente">
-        <div class="topo"><span>Isso não é um jogo a dois</span><b id="num">000/100</b></div>
+      <div class="face verso" aria-hidden="true"><span>Isso não<br>é um jogo<br><em>a dois</em></span></div>
+      <div class="face frente" id="frente">
+        <div class="topo"><span id="tipo">A dois</span><b id="num">000/100</b></div>
         <div class="pergunta" id="pergunta"></div>
-        <div class="regra">Responda ou cumpra uma prenda.</div>
+        <div class="regra" id="regra">Responda ou pague.</div>
       </div>
     </div>
   </div>
 
-  <div class="prenda" id="prenda" aria-live="polite" hidden>
-    <small><span>Prenda</span><span id="prendaNum"></span></small>
-    <p id="prendaTxt"></p>
+  <div class="paga" id="paga" aria-live="polite" hidden>
+    <small>Vai ter que pagar</small>
+    <p id="pagaTxt"></p>
   </div>
 
   <div class="acoes">
     <button id="sortear" type="button">Sortear carta</button>
-    <button id="recusar" type="button" disabled>Não quero responder: sortear prenda</button>
+    <button id="pagar" type="button" disabled>Não quer responder? Vai ter que pagar.</button>
     <div class="sec">
       <button id="desfazer" type="button">Voltar carta</button>
       <button id="reiniciar" type="button">Embaralhar tudo</button>
     </div>
-    <p class="fim" id="fim" hidden>Acabaram as 100 cartas. Toque em “Embaralhar tudo” para recomeçar.</p>
+    <p class="fim" id="fim" hidden>Acabaram as 110 cartas. Toque em “Embaralhar tudo” para recomeçar.</p>
   </div>
 
   <details>
@@ -104,7 +108,7 @@ ol li span small{display:block;color:var(--ouro);font-size:.95rem}
 </main>
 
 <script>
-const CARTAS = [
+const PERGUNTAS = [
 "Qual foi a primeira coisa em mim que te deu vontade de me beijar?",
 "Qual parte do meu corpo você mais gosta de olhar quando eu não percebo?",
 "Qual foi o nosso beijo mais marcante até hoje?",
@@ -206,7 +210,19 @@ const CARTAS = [
 "O que você gostaria que fosse diferente na nossa rotina íntima?",
 "Se esta noite não tivesse limite além do nosso combinado, como ela terminaria?"
 ];
-const PRENDAS = [
+const SURPRESAS = [
+"Tire uma peça de roupa do seu par e uma peça sua.",
+"Beije seu par por 1 minuto, sem parar, onde ele escolher.",
+"Faça uma massagem sensual de 2 minutos no seu par. Se tiver óleo ou creme, use.",
+"Seu par fica no comando pelos próximos 3 minutos, dentro do combinado.",
+"Vende os olhos do seu par e provoque com beijos e toques por 1 minuto.",
+"Tomem banho juntos antes da próxima carta.",
+"Fiquem os dois só de roupa íntima até o fim do jogo.",
+"Escolha uma música e faça um strip-tease até a roupa íntima para o seu par.",
+"Deite seu par e beije o corpo dele dos pés à cabeça, bem devagar.",
+"Escolham uma fantasia que apareceu no jogo e realizem ainda hoje."
+];
+const PAGAMENTOS = [
 "Dê um beijo de 30 segundos no seu par.",
 "Beije o pescoço do seu par devagar por 20 segundos.",
 "Faça uma massagem nos ombros do seu par por 1 minuto.",
@@ -249,108 +265,117 @@ const PRENDAS = [
 "Dê ao seu par um vale-desejo para usar ainda esta semana.",
 "Tire uma peça de roupa bem devagar, olhando nos olhos do seu par.",
 "Conte uma fantasia que você ainda não contou.",
-"Seu par escolhe a sua próxima prenda.",
+"Seu par escolhe o que você vai pagar na próxima vez.",
 "Passe os lábios pelo braço do seu par, do pulso até o ombro.",
 "Dê um beijo em cada parte do rosto do seu par.",
 "Faça uma proposta indecente para mais tarde. Seu par decide se aceita.",
 "Beije seu par sem usar as mãos.",
 "Vista uma peça de roupa do seu par até o fim do jogo.",
 "Faça carinho na nuca do seu par por 1 minuto, bem devagar.",
-"Prenda livre: seu par inventa uma, dentro do combinado."
+"Livre: seu par inventa o pagamento, dentro do combinado."
 ];
-const CHAVE = "isso-nao-e-um-jogo-a-dois:v1";
+// baralho: índices 0–99 são perguntas, 100–109 são cartas surpresa
+const TOTAL = PERGUNTAS.length + SURPRESAS.length;
+const ehSurpresa = c => c >= PERGUNTAS.length;
+const CHAVE = "isso-nao-e-um-jogo-a-dois:v2";
 const $ = id => document.getElementById(id);
-// cada jogada: {c: índice da carta, p: índice da prenda ou null}
-let jogadas = [];
-let prendasUsadas = [];
+let jogadas = [];          // {c: índice no baralho, p: índice do pagamento ou null}
+let pagosUsados = [];
 let confirmando = false;
 
 function rand(n){ const r = new Uint32Array(1); crypto.getRandomValues(r); return r[0] % n; }
-function pad(n){ return String(n+1).padStart(3,"0"); }
+function rotulo(c){ return ehSurpresa(c) ? "S" + String(c - PERGUNTAS.length + 1).padStart(2,"0") : String(c+1).padStart(3,"0"); }
+function texto(c){ return ehSurpresa(c) ? SURPRESAS[c - PERGUNTAS.length] : PERGUNTAS[c]; }
 
 function carregar(){
   try{
     const s = JSON.parse(localStorage.getItem(CHAVE));
-    if(s && Array.isArray(s.j)) jogadas = s.j.filter(x=>x && Number.isInteger(x.c) && x.c>=0 && x.c<CARTAS.length);
-    if(s && Array.isArray(s.p)) prendasUsadas = s.p.filter(n=>Number.isInteger(n)&&n>=0&&n<PRENDAS.length);
+    if(s && Array.isArray(s.j)) jogadas = s.j.filter(x=>x && Number.isInteger(x.c) && x.c>=0 && x.c<TOTAL);
+    if(s && Array.isArray(s.p)) pagosUsados = s.p.filter(n=>Number.isInteger(n)&&n>=0&&n<PAGAMENTOS.length);
   }catch(e){}
 }
-function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify({j:jogadas,p:prendasUsadas})); }catch(e){} }
+function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify({j:jogadas,p:pagosUsados})); }catch(e){} }
 
 function mostrarCarta(j){
   const carta = $("carta");
   if(!j){ carta.classList.remove("virada"); return; }
-  $("num").textContent = pad(j.c) + "/100";
-  $("pergunta").textContent = CARTAS[j.c];
+  const s = ehSurpresa(j.c);
+  $("frente").classList.toggle("surpresa", s);
+  $("tipo").textContent = s ? "Carta surpresa" : "A dois";
+  $("num").textContent = s ? (j.c - PERGUNTAS.length + 1) + "/" + SURPRESAS.length : rotulo(j.c) + "/100";
+  $("regra").textContent = s ? "Sem escapatória. Cumpra agora." : "Responda ou pague.";
+  $("pergunta").textContent = texto(j.c);
   carta.classList.add("virada");
 }
-function mostrarPrenda(j){
-  const box = $("prenda");
+function mostrarPagamento(j){
+  const box = $("paga");
   if(!j || j.p == null){ box.hidden = true; return; }
-  $("prendaNum").textContent = String(j.p+1).padStart(2,"0") + "/" + PRENDAS.length;
-  $("prendaTxt").textContent = PRENDAS[j.p];
+  $("pagaTxt").textContent = PAGAMENTOS[j.p];
   box.hidden = false;
 }
 
 function render(){
-  const resto = CARTAS.length - jogadas.length;
+  const resto = TOTAL - jogadas.length;
   const atual = jogadas[jogadas.length-1];
-  $("restam").textContent = resto + " de " + CARTAS.length + " cartas";
+  $("restam").textContent = resto + " de " + TOTAL + " cartas";
   $("sortear").disabled = resto === 0;
   $("fim").hidden = resto !== 0;
   $("desfazer").disabled = jogadas.length === 0;
-  $("recusar").disabled = !atual;
-  $("recusar").textContent = atual && atual.p != null ? "Trocar a prenda" : "Não quero responder: sortear prenda";
+  const pode = atual && !ehSurpresa(atual.c);
+  $("pagar").disabled = !pode;
+  $("pagar").hidden = atual && ehSurpresa(atual.c);
+  $("pagar").textContent = pode && atual.p != null ? "Sortear outro pagamento" : "Não quer responder? Vai ter que pagar.";
   $("histTitulo").textContent = "Cartas já sorteadas (" + jogadas.length + ")";
   const ol = $("hist"); ol.textContent = "";
   jogadas.slice().reverse().forEach(j=>{
     const li = document.createElement("li");
-    const n = document.createElement("i"); n.textContent = pad(j.c);
-    const t = document.createElement("span"); t.textContent = CARTAS[j.c];
-    if(j.p != null){ const s = document.createElement("small"); s.textContent = "Prenda: " + PRENDAS[j.p]; t.append(s); }
+    const n = document.createElement("i"); n.textContent = rotulo(j.c);
+    const t = document.createElement("span"); t.textContent = texto(j.c);
+    if(j.p != null){ const s = document.createElement("small"); s.textContent = "Pagou: " + PAGAMENTOS[j.p]; t.append(s); }
     li.append(n,t); ol.append(li);
   });
 }
 
 function sortear(){
   const usadas = new Set(jogadas.map(j=>j.c));
-  const disp = CARTAS.map((_,i)=>i).filter(i=>!usadas.has(i));
+  const disp = [];
+  for(let i=0;i<TOTAL;i++) if(!usadas.has(i)) disp.push(i);
   if(!disp.length) return;
   const j = {c: disp[rand(disp.length)], p: null};
   jogadas.push(j); salvar();
-  mostrarPrenda(null);
+  mostrarPagamento(null);
   const carta = $("carta");
   if(carta.classList.contains("virada")){ carta.classList.remove("virada"); setTimeout(()=>mostrarCarta(j), 320); }
   else mostrarCarta(j);
   render();
 }
 
-function sortearPrenda(){
-  const j = jogadas[jogadas.length-1]; if(!j) return;
-  let disp = PRENDAS.map((_,i)=>i).filter(i=>!prendasUsadas.includes(i) && i !== j.p);
-  if(!disp.length){ prendasUsadas = []; disp = PRENDAS.map((_,i)=>i).filter(i=>i !== j.p); }
+function pagar(){
+  const j = jogadas[jogadas.length-1]; if(!j || ehSurpresa(j.c)) return;
+  let disp = PAGAMENTOS.map((_,i)=>i).filter(i=>!pagosUsados.includes(i) && i !== j.p);
+  if(!disp.length){ pagosUsados = []; disp = PAGAMENTOS.map((_,i)=>i).filter(i=>i !== j.p); }
   j.p = disp[rand(disp.length)];
-  prendasUsadas.push(j.p); salvar();
-  mostrarPrenda(j); render();
+  pagosUsados.push(j.p); salvar();
+  mostrarPagamento(j); render();
 }
 
 $("sortear").addEventListener("click", sortear);
-$("recusar").addEventListener("click", sortearPrenda);
+$("pagar").addEventListener("click", pagar);
 $("desfazer").addEventListener("click", ()=>{
   jogadas.pop(); salvar();
   const atual = jogadas[jogadas.length-1];
-  mostrarCarta(atual); mostrarPrenda(atual); render();
+  mostrarCarta(atual); mostrarPagamento(atual); render();
 });
 $("reiniciar").addEventListener("click", e=>{
   const b = e.currentTarget;
   if(!confirmando){ confirmando = true; b.textContent = "Confirmar?"; setTimeout(()=>{confirmando=false; b.textContent="Embaralhar tudo";}, 3000); return; }
   confirmando = false; b.textContent = "Embaralhar tudo";
-  jogadas = []; prendasUsadas = []; salvar(); mostrarCarta(null); mostrarPrenda(null); render();
+  jogadas = []; pagosUsados = []; salvar(); mostrarCarta(null); mostrarPagamento(null); render();
 });
 
 carregar();
 const ultima = jogadas[jogadas.length-1];
-if(ultima){ mostrarCarta(ultima); mostrarPrenda(ultima); }
+if(ultima){ mostrarCarta(ultima); mostrarPagamento(ultima); }
 render();
 </script>
 </body>
