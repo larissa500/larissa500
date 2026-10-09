@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Isso Não É um Jogo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@500;700;900&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: uma mesa escura com uma única carta no centro; botão de sortear logo abaixo, histórico recolhível. */
+:root{
+  --mesa:#240c18; --mesa-2:#3a1427; --papel:#f7e9e3; --tinta:#2a0f1c;
+  --brasa:#ff5d7d; --brasa-escura:#c9264c; --nevoa:#d9b8c4;
+  --f-display:"Darker Grotesque",system-ui,sans-serif;
+  --f-mono:"DM Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:radial-gradient(120% 80% at 50% 0%,var(--mesa-2),var(--mesa) 70%);background-color:var(--mesa);color:var(--papel);font-family:var(--f-display);font-size:18px}
+.wrap{min-height:100%;max-width:440px;margin:0 auto;padding-block:20px 32px;padding-inline:16px;display:flex;flex-direction:column;gap:18px;box-sizing:border-box}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+h1{margin:0;font-weight:900;font-size:1.7rem;line-height:1;letter-spacing:-.01em;text-wrap:balance}
+h1 s{text-decoration-color:var(--brasa);text-decoration-thickness:3px}
+.restam{font-family:var(--f-mono);font-size:.78rem;color:var(--nevoa);white-space:nowrap;font-variant-numeric:tabular-nums}
+.palco{perspective:1200px}
+.carta{position:relative;aspect-ratio:3/4.2;max-width:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.carta.virada{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 18px 40px rgba(0,0,0,.45);box-sizing:border-box}
+.verso{background:repeating-linear-gradient(45deg,var(--brasa-escura) 0 10px,var(--mesa-2) 10px 20px);display:grid;place-items:center;border:8px solid var(--papel)}
+.verso span{background:var(--papel);color:var(--tinta);font-weight:900;font-size:1.5rem;line-height:.95;padding:14px 16px;text-align:center;border-radius:6px;transform:rotate(-4deg)}
+.frente{background:var(--papel);color:var(--tinta);transform:rotateY(180deg);display:flex;flex-direction:column;padding:20px 22px}
+.topo{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:1.5px solid var(--tinta);padding-bottom:10px;gap:8px}
+.topo b{font-weight:500;color:var(--brasa-escura);font-variant-numeric:tabular-nums}
+.pergunta{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:clamp(1.6rem,7.4vw,2.2rem);line-height:1.02;text-wrap:balance;min-width:0;overflow-wrap:anywhere}
+.regra{font-family:var(--f-mono);font-size:.72rem;text-align:center;border-top:1.5px solid var(--tinta);padding-top:10px}
+.acoes{display:flex;flex-direction:column;gap:10px}
+button{font:inherit;cursor:pointer;border:0}
+#sortear{background:var(--brasa);color:var(--tinta);font-weight:900;font-size:1.45rem;padding:14px 18px;border-radius:999px;box-shadow:0 6px 0 var(--brasa-escura);transition:transform .08s,box-shadow .08s}
+#sortear:active{transform:translateY(4px);box-shadow:0 2px 0 var(--brasa-escura)}
+#sortear:disabled{opacity:.5;cursor:default}
+.sec{display:flex;gap:10px}
+.sec button{flex:1;background:transparent;color:var(--nevoa);border:1.5px solid var(--nevoa);border-radius:999px;padding:9px 12px;font-weight:700;font-size:1rem}
+button:focus-visible{outline:3px solid var(--papel);outline-offset:3px}
+details{border-top:1px solid rgba(217,184,196,.3);padding-top:12px}
+summary{cursor:pointer;font-family:var(--f-mono);font-size:.8rem;color:var(--nevoa)}
+ol{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:1.05rem;line-height:1.15}
+ol li{display:flex;gap:10px}
+ol li i{font-style:normal;font-family:var(--f-mono);font-size:.75rem;color:var(--brasa);padding-top:3px;font-variant-numeric:tabular-nums}
+.fim{text-align:center;color:var(--nevoa);font-size:1rem;margin:0}
+@media (prefers-reduced-motion:reduce){.carta{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Isso <s>não</s> é um jogo</h1>
+    <span class="restam" id="restam">100 de 100 cartas</span>
+  </header>
+
+  <div class="palco">
+    <div class="carta" id="carta" aria-live="polite">
+      <div class="face verso" aria-hidden="true"><span>ISSO NÃO<br>É UM JOGO</span></div>
+      <div class="face frente">
+        <div class="topo"><span>Isso não é um jogo</span><b id="num">000/100</b></div>
+        <div class="pergunta" id="pergunta"></div>
+        <div class="regra">Responda, passe ou escolha alguém da roda.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acoes">
+    <button id="sortear" type="button">Sortear carta</button>
+    <div class="sec">
+      <button id="desfazer" type="button">Voltar carta</button>
+      <button id="reiniciar" type="button">Embaralhar tudo</button>
+    </div>
+    <p class="fim" id="fim" hidden>Acabaram as 100 cartas. Toque em “Embaralhar tudo” para recomeçar.</p>
+  </div>
+
+  <details>
+    <summary id="histTitulo">Cartas já sorteadas (0)</summary>
+    <ol id="hist"></ol>
+  </details>
+</main>
+
+<script>
+const CARTAS = [
+"Qual verdade sobre você quase ninguém conhece?",
+"Qual foi a última vez em que você fingiu estar bem?",
+"Qual insegurança sua mais interfere nas suas escolhas?",
+"Que parte da sua personalidade você esconde quando conhece alguém?",
+"Qual foi a maior mentira que você já contou para alguém próximo?",
+"Qual segredo seu surpreenderia mais as pessoas desta roda?",
+"Qual foi a última coisa que você fez e se arrependeu imediatamente?",
+"Qual hábito seu você sabe que precisa mudar, mas continua adiando?",
+"Qual opinião sua você evita falar em voz alta?",
+"Qual foi a situação em que você mais sentiu vergonha de si mesma?",
+"Qual pessoa te conhece melhor do que você gostaria?",
+"Qual elogio você mais gostaria de ouvir de alguém específico?",
+"Qual crítica sobre você dói porque, no fundo, tem um pouco de verdade?",
+"Qual versão sua você nunca gostaria de voltar a ser?",
+"Qual foi a maior decisão que você tomou por impulso?",
+"Qual medo você costuma disfarçar de indiferença?",
+"Qual coisa você finge não ligar, mas liga muito?",
+"Qual foi a última vez que você chorou por algo que ninguém sabe?",
+"Qual expectativa sobre a sua vida você já desistiu de cumprir?",
+"Se pudesse apagar uma lembrança, qual seria?",
+"De quem você sente saudade, mas não procuraria?",
+"Quem você perdeu por orgulho?",
+"Qual pedido de desculpas você ainda deve?",
+"Qual pedido de desculpas você ainda gostaria de receber?",
+"Qual amizade terminou e você reconhece que teve culpa?",
+"Qual foi a pior coisa que você já falou de um amigo pelas costas?",
+"Você já sentiu inveja real de alguém próximo? Por quê?",
+"Já se afastou de alguém sem explicar o verdadeiro motivo?",
+"Já manteve uma amizade apenas por conveniência?",
+"Qual pessoa você perdoou, mas nunca voltou a confiar?",
+"Quem você gostaria de ter conhecido em outra fase da vida?",
+"Qual pessoa você julgou errado quando conheceu?",
+"Você já contou um segredo que prometeu guardar?",
+"Qual amizade você gostaria de recuperar?",
+"Você já fingiu gostar de alguém para não criar conflito?",
+"Qual pessoa da sua vida você acha que merece mais reconhecimento seu?",
+"Você já competiu silenciosamente com um amigo?",
+"Qual foi a maior decepção que você teve com uma amizade?",
+"Quem você defenderia mesmo sabendo que a pessoa está errada?",
+"Você já se sentiu substituída por alguém?",
+"Você já disse 'eu te amo' sem ter certeza?",
+"Qual pessoa você demorou mais tempo para superar?",
+"Qual ex ou ficante você atenderia se ligasse agora?",
+"Você já voltou para alguém sabendo que ia dar errado?",
+"Qual foi a coisa mais humilhante que você aceitou por gostar de alguém?",
+"Já manteve alguém por perto apenas porque gostava da atenção?",
+"Já deu esperança para alguém sem intenção de levar adiante?",
+"Qual foi o maior sinal vermelho que você ignorou por atração?",
+"Você já teve ciúme de alguém com quem não tinha compromisso?",
+"Já ficou com alguém para esquecer outra pessoa?",
+"Você já comparou duas pessoas com quem se relacionou?",
+"Já se arrependeu de terminar com alguém?",
+"Já se arrependeu de não terminar antes?",
+"Você já insistiu em alguém que claramente não queria o mesmo?",
+"Já gostou de duas pessoas ao mesmo tempo?",
+"Você já escondeu um relacionamento ou ficada de alguém?",
+"Qual foi sua maior ilusão amorosa?",
+"Você já stalkeou alguém até descobrir algo que preferia não saber?",
+"Qual mensagem você gostaria de receber hoje?",
+"Qual pessoa ainda consegue mexer com você facilmente?",
+"Quem desta roda seria mais perigoso para você se apaixonar?",
+"Com quem desta roda você teria mais dificuldade de manter algo casual?",
+"Quem desta roda você acha que esconde melhor o que sente?",
+"Quem desta roda você procuraria primeiro em uma crise?",
+"Quem desta roda você acha que te conhece menos do que imagina?",
+"Quem desta roda provavelmente guardaria melhor um segredo seu?",
+"Quem desta roda você acha que já te julgou e nunca admitiu?",
+"Com quem desta roda você viajaria por um mês?",
+"Quem desta roda você acha que sobreviveria melhor sozinho em outro país?",
+"Quem desta roda você acha que se apaixona mais rápido?",
+"Quem desta roda você acha que demora mais para admitir que está apaixonado?",
+"Quem desta roda tem mais chance de voltar para um ex?",
+"Quem desta roda você acha que já ignorou uma red flag enorme?",
+"Quem desta roda você acha que teria mais segredos no celular?",
+"Quem desta roda você escolheria para te defender em uma discussão?",
+"Quem desta roda você acha que dá os piores conselhos amorosos?",
+"Quem desta roda você acha que mais finge não se importar?",
+"Quem desta roda provavelmente sabe algo sobre você que ninguém mais sabe?",
+"Qual impressão sobre alguém desta roda mudou completamente?",
+"Qual pergunta você teria medo de alguém desta roda te fazer?",
+"Você já ficou com alguém sabendo que um amigo tinha interesse?",
+"Você já se envolveu com duas pessoas do mesmo grupo de amigos?",
+"Você já beijou alguém e se arrependeu antes mesmo de acabar?",
+"Qual foi a maior loucura que você já fez por atração?",
+"Você já mandou mensagem e apagou esperando que a pessoa perguntasse o que era?",
+"Já fingiu estar ocupada para não responder alguém?",
+"Já ignorou alguém de propósito para fazer a pessoa sentir sua falta?",
+"Você já ficou com alguém que jurou que nunca ficaria?",
+"Já sentiu atração por alguém totalmente inconveniente?",
+"Você já teve um crush secreto em alguém muito próximo?",
+"Qual foi a maior vergonha que você passou tentando impressionar alguém?",
+"Você já mentiu sobre onde estava ou com quem estava?",
+"Já se arrependeu de contar demais depois de beber?",
+"Você já acordou e teve medo de olhar as mensagens que mandou?",
+"Qual foi sua pior decisão tomada de madrugada?",
+"Você já beijaria novamente alguém que hoje diz que não suporta?",
+"Qual verdade sobre sua vida amorosa você evita admitir para si mesma?",
+"Você acha que já foi a pessoa tóxica de uma relação? O que fez?",
+"Se pudesse ouvir uma conversa privada sobre você, de quem seria?",
+"Se todo mundo aqui pudesse fazer apenas uma pergunta e você fosse obrigada a responder com sinceridade, qual pergunta você torceria para ninguém fazer?"
+];
+const CHAVE = "isso-nao-e-um-jogo:v1";
+const $ = id => document.getElementById(id);
+let sorteadas = [];      // índices na ordem em que saíram
+let confirmando = false;
+
+function carregar(){
+  try{ const s = JSON.parse(localStorage.getItem(CHAVE)); if(Array.isArray(s)) sorteadas = s.filter(n=>Number.isInteger(n)&&n>=0&&n<CARTAS.length); }catch(e){}
+}
+function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(sorteadas)); }catch(e){} }
+
+function mostrar(i){
+  const carta = $("carta");
+  if(i == null){ carta.classList.remove("virada"); return; }
+  $("num").textContent = String(i+1).padStart(3,"0") + "/100";
+  $("pergunta").textContent = CARTAS[i];
+  carta.classList.add("virada");
+}
+
+function render(){
+  const resto = CARTAS.length - sorteadas.length;
+  $("restam").textContent = resto + " de " + CARTAS.length + " cartas";
+  $("sortear").disabled = resto === 0;
+  $("fim").hidden = resto !== 0;
+  $("desfazer").disabled = sorteadas.length === 0;
+  $("histTitulo").textContent = "Cartas já sorteadas (" + sorteadas.length + ")";
+  const ol = $("hist"); ol.textContent = "";
+  sorteadas.slice().reverse().forEach(i=>{
+    const li = document.createElement("li");
+    const n = document.createElement("i"); n.textContent = String(i+1).padStart(3,"0");
+    const t = document.createElement("span"); t.textContent = CARTAS[i];
+    li.append(n,t); ol.append(li);
+  });
+}
+
+function sortear(){
+  const disponiveis = CARTAS.map((_,i)=>i).filter(i=>!sorteadas.includes(i));
+  if(!disponiveis.length) return;
+  const r = new Uint32Array(1); crypto.getRandomValues(r);
+  const i = disponiveis[r[0] % disponiveis.length];
+  sorteadas.push(i); salvar();
+  const carta = $("carta");
+  if(carta.classList.contains("virada")){
+    carta.classList.remove("virada");
+    setTimeout(()=>mostrar(i), 320);
+  } else mostrar(i);
+  render();
+}
+
+$("sortear").addEventListener("click", sortear);
+$("desfazer").addEventListener("click", ()=>{
+  sorteadas.pop(); salvar();
+  mostrar(sorteadas.length ? sorteadas[sorteadas.length-1] : null); render();
+});
+$("reiniciar").addEventListener("click", e=>{
+  if(!confirmando){ confirmando = true; e.target.textContent = "Confirmar?"; setTimeout(()=>{confirmando=false; e.target.textContent="Embaralhar tudo";}, 3000); return; }
+  confirmando = false; e.target.textContent = "Embaralhar tudo";
+  sorteadas = []; salvar(); mostrar(null); render();
+});
+
+carregar();
+if(sorteadas.length) mostrar(sorteadas[sorteadas.length-1]);
+render();
+</script>
+</body>
+</html>
